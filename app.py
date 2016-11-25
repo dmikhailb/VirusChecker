@@ -1,6 +1,7 @@
 from flask import Flask, request, jsonify, make_response, abort
 from flask.ext.uploads import UploadSet, configure_uploads, ALL
 import pyclamd
+import os
 
 cd = pyclamd.ClamdAgnostic()
 
@@ -22,9 +23,13 @@ def file_scanner():
 		file_name = files.save(request.files['file_to_scan'])		
 		test_results = cd.scan_file('/home/ubuntu/virus_scanner_v2/FlaskVirusChecker/to_scan/'+file_name)
 		if test_results:
+			os.remove('to_scan/'+file_name)
 			return jsonify({"results" : test_results})
+
 		else:
+			os.remove('to_scan/'+file_name)
 			return jsonify({"results" : "no viruses detected in file "+file_name})
+
 	else:
 		abort(400)	
 
